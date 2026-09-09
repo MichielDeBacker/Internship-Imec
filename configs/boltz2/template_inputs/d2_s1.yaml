@@ -1,0 +1,19 @@
+version: 1
+
+sequences:
+  - protein:
+      id: [A, B]
+      sequence: MIKRVLVVSMVGLSLVGCVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNVIGAIGGAVLGGFLGNTVGGGTGRSLATAAGAVAGGVAGQGVQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+      msa: empty
+
+  - protein:
+      id: C
+      sequence: SVAAQRAALESIPGATPEQIALCLLQTPPSASVAEVVANARAFLAANPEYS
+      msa: empty
+
+templates:
+  - cif: /emdata/EMprocessing/mdebacker/slyb_boltz2/data/7ojg.cif
+    chain_id: [A, B]
+    template_id: [A, B]
+    force: true
+    threshold: 1.0
