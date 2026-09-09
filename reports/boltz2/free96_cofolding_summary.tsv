@@ -1,0 +1,6 @@
+name	role	iptm	AB_pair_iptm	AC_pair_iptm	BC_pair_iptm	binder_mean	binder_min	binder_delta
+d2_s0	candidate	0.4734	0.5094	0.3884	0.2778	0.3331	0.2778	0.1107
+d6_s7	negative	0.3164	0.3045	0.2568	0.3451	0.3010	0.2568	0.0883
+d2_s1	candidate	0.2199	0.2297	0.1947	0.1348	0.1647	0.1348	0.0599
+d6_s3	negative	0.1699	0.1877	0.1190	0.0966	0.1078	0.0966	0.0223
+d1_s3	candidate	0.1271	0.1190	0.1541	0.0911	0.1226	0.0911	0.0630
