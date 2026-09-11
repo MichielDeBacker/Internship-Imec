@@ -49,3 +49,7 @@ against the template-conditioned SlyB pair.
 
 The two input sets are intentionally retained separately and should not be
 overwritten because they represent different validation experiments.
+
+## vertical60-mpnn-pilot-20260911
+
+Four 60-aa binder backbones were generated with classic RFdiffusion using the SlyB K/A/B/C structural context and balanced A/B hotspot conditioning. ProteinMPNN generated four sequences per backbone; one sequence per backbone was selected for an initial Boltz-2 cofolding pilot. During cofolding, the two native 138-aa SlyB chains are strongly template-conditioned while the 60-aa binder is predicted freely.

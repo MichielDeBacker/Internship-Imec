@@ -1,0 +1,24 @@
+version: 1
+
+sequences:
+  - protein:
+      id: A
+      sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNVIGAIGGAVLGGFLGNTVGGGTGRSLATAAGAVAGGVAGQGVQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+      msa: empty
+
+  - protein:
+      id: B
+      sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNVIGAIGGAVLGGFLGNTVGGGTGRSLATAAGAVAGGVAGQGVQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+      msa: empty
+
+  - protein:
+      id: C
+      sequence: DALLAEARRRLAAGGEEARREILAELDERIDEVRDALATPEAQAELGRLLEARAAVEALI
+      msa: empty
+
+templates:
+  - pdb: /home/users/mdebacker/slyb/boltz/vertical60/SlyB_AB_fixed_template.pdb
+    chain_id: [A, B]
+    template_id: [A1, B1]
+    force: true
+    threshold: 1.0
