@@ -1,0 +1,13 @@
+candidate	family	parent_chain	parent_n_res	monomer_n_res	sequence_identity	CA_RMSD_A
+d2_s0	design2	A	51	51	0.45098	0.41077
+d2_s0	design2	B	480	51	0.0	
+d2_s1	design2	A	51	51	0.529412	0.36538
+d2_s1	design2	B	480	51	0.0	
+d1_s3	design1	A	37	37	0.378378	0.47842
+d1_s3	design1	B	480	37	0.0	
+d6_s6	design6	A	38	38	0.447368	0.67426
+d6_s6	design6	B	480	38	0.0	
+d6_s3	design6	A	38	38	0.368421	11.29454
+d6_s3	design6	B	480	38	0.0	
+d6_s7	design6	A	38	38	0.447368	9.48374
+d6_s7	design6	B	480	38	0.0	

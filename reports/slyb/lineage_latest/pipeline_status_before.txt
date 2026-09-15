@@ -1,0 +1,34 @@
+project       : SlyB C11 adjacent-subunit binder
+repo          : /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec
+git branch    : slyb-hydra-rfd3
+SLYB_ROOT     : /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb
+work          : /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work
+
+Targets:
+  ring       OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/inputs/target_ring_C11.pdb
+  duo        OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/inputs/target_duo_soluble.pdb
+  trio       OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/inputs/target_trio_soluble.pdb
+  penta      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/inputs/target_penta_soluble.pdb
+
+Backbone families:
+  design0    OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design0.cif
+  design1    OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design1.cif
+  design2    OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design2.cif
+  design6    OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design6.cif
+
+Candidates:
+  d2_s0      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d2_s0/d2_s0_model.cif
+  d1_s3      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d1_s3/d1_s3_model.cif
+  d6_s6      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s6/d6_s6_model.cif
+  d2_s1      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d2_s1/d2_s1_model.cif
+  d6_s3      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s3/d6_s3_model.cif
+  d6_s7      OK  /rhea/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s7/d6_s7_model.cif
+
+Pipeline artifacts:
+  inventory : READY
+  geometry  : READY
+  rfd3 plan : READY
+
+RFD3 runtime:
+  rfd3      : NOT ON PATH
+  foundry   : NOT ON PATH
