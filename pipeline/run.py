@@ -273,145 +273,235 @@ def cmd_geometry(_args=None):
     root = slyb_root()
 
     ring = root / CFG["targets"]["ring"]
-    script = ROOT / "scripts" / "slyb" / "check_binder_symmetry.py"
+
+    evaluator = (
+        ROOT
+        / "pipeline"
+        / "lib"
+        / "c11_geometry.py"
+    )
 
     outdir = WORK / "geometry"
-    logs = outdir / "logs"
+    details = outdir / "details"
 
-    logs.mkdir(parents=True, exist_ok=True)
-    REPORTS.mkdir(parents=True, exist_ok=True)
+    details.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    structures = []
+    REPORTS.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    for name, value in CFG["designs"].items():
-        p = root / value
-        if p.is_file():
-            structures.append(
-                {
-                    "name": name,
-                    "class": "original_backbone",
-                    "path": p,
-                }
-            )
+    jobs = []
 
-    seq_out = root / "sequence_design" / "out"
+    # Parent backbone geometries.
+    for family in ("design0", "design1", "design2", "design6"):
+        jobs.append(
+            {
+                "name": family,
+                "class": "parent_backbone",
+                "parent": root / CFG["designs"][family],
+                "monomer": None,
+            }
+        )
 
-    if seq_out.exists():
-        for p in sorted(seq_out.glob("lmpnn_*/*.cif")):
-            structures.append(
-                {
-                    "name": p.stem,
-                    "class": "ligandmpnn",
-                    "path": p,
-                }
-            )
+    # Monomer RF3 candidates restored onto their parent
+    # backbone poses.
+    mapping = {
+        "d2_s0": "design2",
+        "d2_s1": "design2",
+        "d1_s3": "design1",
+        "d6_s6": "design6",
+        "d6_s3": "design6",
+        "d6_s7": "design6",
+    }
 
-    print(f"structures to screen: {len(structures)}")
+    all_candidates = candidate_dict()
+
+    for candidate, family in mapping.items():
+        jobs.append(
+            {
+                "name": candidate,
+                "class": "placed_rf3_monomer",
+                "parent": root / CFG["designs"][family],
+                "monomer": root / all_candidates[candidate],
+            }
+        )
 
     rows = []
 
-    for i, item in enumerate(structures, 1):
-        path = item["path"]
-
-        safe = re.sub(
-            r"[^A-Za-z0-9_.-]+",
-            "_",
-            rel(path, root),
+    for job in jobs:
+        outfile = (
+            details
+            / f"{job['name']}.json"
         )
-
-        logfile = logs / f"{safe}.txt"
 
         cmd = [
             sys.executable,
-            str(script),
-            str(path),
-            "--order",
-            "11",
-            "--ref",
+            str(evaluator),
+            "--ring",
             str(ring),
+            "--parent",
+            str(job["parent"]),
+            "--name",
+            job["name"],
+            "--json-out",
+            str(outfile),
         ]
 
+        if job["monomer"] is not None:
+            cmd.extend(
+                [
+                    "--monomer",
+                    str(job["monomer"]),
+                ]
+            )
+
         print(
-            f"[{i:03d}/{len(structures):03d}] "
-            f"{item['class']} {rel(path, root)}"
+            f"geometry {job['name']} "
+            f"({job['class']})"
         )
 
         proc = subprocess.run(
             cmd,
-            cwd=root,
+            cwd=ROOT,
             text=True,
             capture_output=True,
         )
 
-        text = proc.stdout + "\n" + proc.stderr
+        if proc.returncode != 0:
+            rows.append(
+                {
+                    "name": job["name"],
+                    "class": job["class"],
+                    "status": "ERROR",
+                    "target_fit_CA_RMSD_A": "",
+                    "monomer_fit_CA_RMSD_A": "",
+                    "neighbor_residual_A": "",
+                    "target_BB_min_A": "",
+                    "binder_pair_BB_min_A": "",
+                    "contacts_partner1_min": "",
+                    "contacts_partner2_min": "",
+                    "detail": str(outfile),
+                    "error": (
+                        proc.stderr.strip()
+                        or proc.stdout.strip()
+                    ),
+                }
+            )
+            continue
 
-        logfile.write_text(text)
-
-        status = (
-            "ERROR"
-            if proc.returncode != 0
-            else parse_pass(text)
-        )
+        with outfile.open() as f:
+            result = json.load(f)
 
         rows.append(
             {
-                "name": item["name"],
-                "class": item["class"],
-                "status": status,
-                "exit_code": proc.returncode,
-                "path": rel(path, root),
-                "log": str(logfile),
+                "name": job["name"],
+                "class": job["class"],
+                "status": (
+                    "PASS"
+                    if result["PASS"]
+                    else "FAIL"
+                ),
+                "target_fit_CA_RMSD_A": (
+                    result[
+                        "target_fit_CA_RMSD_A"
+                    ]
+                ),
+                "monomer_fit_CA_RMSD_A": (
+                    result[
+                        "monomer_to_parent_CA_RMSD_A"
+                    ]
+                ),
+                "neighbor_residual_A": (
+                    result[
+                        "max_neighbor_placement_residual_A"
+                    ]
+                ),
+                "target_BB_min_A": (
+                    result[
+                        "min_binder_to_ring_backbone_A"
+                    ]
+                ),
+                "binder_pair_BB_min_A": (
+                    result[
+                        "min_binder_to_binder_backbone_A"
+                    ]
+                ),
+                "contacts_partner1_min": (
+                    result[
+                        "min_contacted_binder_res_partner1"
+                    ]
+                ),
+                "contacts_partner2_min": (
+                    result[
+                        "min_contacted_binder_res_partner2"
+                    ]
+                ),
+                "detail": str(outfile),
+                "error": "",
             }
         )
 
-    summary_tsv = outdir / "summary.tsv"
+    summary = outdir / "summary.tsv"
 
-    with summary_tsv.open("w", newline="") as f:
-        fields = [
-            "name",
-            "class",
-            "status",
-            "exit_code",
-            "path",
-            "log",
-        ]
+    fields = [
+        "name",
+        "class",
+        "status",
+        "target_fit_CA_RMSD_A",
+        "monomer_fit_CA_RMSD_A",
+        "neighbor_residual_A",
+        "target_BB_min_A",
+        "binder_pair_BB_min_A",
+        "contacts_partner1_min",
+        "contacts_partner2_min",
+        "detail",
+        "error",
+    ]
 
+    with summary.open(
+        "w",
+        newline="",
+    ) as f:
         writer = csv.DictWriter(
             f,
             delimiter="\t",
+            lineterminator="\n",
             fieldnames=fields,
         )
 
         writer.writeheader()
         writer.writerows(rows)
 
-    summary_json = outdir / "summary.json"
-
-    summary_json.write_text(
-        json.dumps(
-            {
-                "generated_at": now(),
-                "rows": rows,
-            },
-            indent=2,
-        )
-    )
-
     shutil.copy2(
-        summary_tsv,
+        summary,
         REPORTS / "latest_geometry_summary.tsv",
     )
 
-    counts = Counter(r["status"] for r in rows)
+    counts = Counter(
+        r["status"]
+        for r in rows
+    )
 
-    print("\nGeometry results:")
+    print("\nC11 placement geometry:")
 
-    for key in ("PASS", "FAIL", "UNKNOWN", "ERROR"):
-        print(f"  {key:8s} {counts.get(key, 0)}")
+    for key in ("PASS", "FAIL", "ERROR"):
+        print(
+            f"  {key:8s} "
+            f"{counts.get(key, 0)}"
+        )
 
-    print(f"\nsummary: {summary_tsv}")
+    print(f"\nsummary: {summary}")
 
-    return 0 if counts.get("ERROR", 0) == 0 else 3
+    return (
+        0
+        if counts.get("ERROR", 0) == 0
+        else 3
+    )
+
 
 
 def cmd_rfd3_check(_args=None):

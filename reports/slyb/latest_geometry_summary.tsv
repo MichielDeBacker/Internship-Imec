@@ -1,41 +1,121 @@
-name	class	status	exit_code	path	log
-design0	original_backbone	UNKNOWN	0	sequence_design/inputs/design0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_inputs_design0.cif.txt
-design1	original_backbone	UNKNOWN	0	sequence_design/inputs/design1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_inputs_design1.cif.txt
-design2	original_backbone	UNKNOWN	0	sequence_design/inputs/design2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_inputs_design2.cif.txt
-design6	original_backbone	UNKNOWN	0	sequence_design/inputs/design6.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_inputs_design6.cif.txt
-design0_b0_d0	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d0.cif.txt
-design0_b0_d1	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d1.cif.txt
-design0_b0_d2	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d2.cif.txt
-design0_b0_d3	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d3.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d3.cif.txt
-design0_b0_d4	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d4.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d4.cif.txt
-design0_b0_d5	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d5.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d5.cif.txt
-design0_b0_d6	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d6.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d6.cif.txt
-design0_b0_d7	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d0_50056965/design0_b0_d7.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d0_50056965_design0_b0_d7.cif.txt
-design1_b0_d0	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d0.cif.txt
-design1_b0_d1	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d1.cif.txt
-design1_b0_d2	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d2.cif.txt
-design1_b0_d3	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d3.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d3.cif.txt
-design1_b0_d4	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d4.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d4.cif.txt
-design1_b0_d5	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d5.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d5.cif.txt
-design1_b0_d6	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d6.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d6.cif.txt
-design1_b0_d7	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d1_50056965/design1_b0_d7.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d1_50056965_design1_b0_d7.cif.txt
-design2_b0_d0	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d0.cif.txt
-design2_b0_d1	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d1.cif.txt
-design2_b0_d2	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d2.cif.txt
-design2_b0_d3	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d3.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d3.cif.txt
-design2_b0_d4	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d4.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d4.cif.txt
-design2_b0_d5	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d5.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d5.cif.txt
-design2_b0_d6	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d6.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d6.cif.txt
-design2_b0_d7	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d2_50056965/design2_b0_d7.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d2_50056965_design2_b0_d7.cif.txt
-design6_b0_d0	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d0.cif.txt
-design6_b0_d1	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d1.cif.txt
-design6_b0_d2	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d2.cif.txt
-design6_b0_d3	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d3.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d3.cif.txt
-design6_b0_d4	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d4.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d4.cif.txt
-design6_b0_d5	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d5.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d5.cif.txt
-design6_b0_d6	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d6.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d6.cif.txt
-design6_b0_d7	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_d6_50056965/design6_b0_d7.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_d6_50056965_design6_b0_d7.cif.txt
-design6_b0_d0	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_smoke_d6_50056964/design6_b0_d0.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_smoke_d6_50056964_design6_b0_d0.cif.txt
-design6_b0_d1	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_smoke_d6_50056964/design6_b0_d1.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_smoke_d6_50056964_design6_b0_d1.cif.txt
-design6_b0_d2	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_smoke_d6_50056964/design6_b0_d2.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_smoke_d6_50056964_design6_b0_d2.cif.txt
-design6_b0_d3	ligandmpnn	UNKNOWN	0	sequence_design/out/lmpnn_smoke_d6_50056964/design6_b0_d3.cif	/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/logs/sequence_design_out_lmpnn_smoke_d6_50056964_design6_b0_d3.cif.txt
+name	class	status	target_fit_CA_RMSD_A	monomer_fit_CA_RMSD_A	neighbor_residual_A	target_BB_min_A	binder_pair_BB_min_A	contacts_partner1_min	contacts_partner2_min	detail	error
+design0	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design0.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=50, native=138"
+design1	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design1.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=37, native=138"
+design2	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design2.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+design6	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design6.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d2_s0	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d2_s0.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+d2_s1	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d2_s1.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+d1_s3	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d1_s3.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=37, native=138"
+d6_s6	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s6.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d6_s3	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s3.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d6_s7	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s7.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
