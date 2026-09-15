@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-09-15T16:43:22.732097+00:00",
+  "authorized": false,
+  "reason": "Manual parent selection and target hotspot review are required before RFD3 execution.",
+  "geometry_pass_candidates": [],
+  "maximum_parent_geometries_after_review": 2,
+  "hotspots": null,
+  "rfd3_command": null
+}
