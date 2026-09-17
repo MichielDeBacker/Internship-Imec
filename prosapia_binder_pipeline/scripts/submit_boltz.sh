@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIG="${CONFIG:-$ROOT/config/slyb_hydra.yaml}"
-WORK=/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/prosapia_binder_pipeline/slyb_vertical96
+WORK=/data/leuven/392/vsc39230/slyb_prosapia_work/slyb_vertical96
 MANIFEST="$WORK/03_boltz/boltz_inputs.tsv"
 THROTTLE="${THROTTLE:-12}"
 

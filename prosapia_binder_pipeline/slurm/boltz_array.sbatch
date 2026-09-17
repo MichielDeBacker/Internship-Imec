@@ -10,12 +10,12 @@
 
 set -euo pipefail
 
-PIPELINE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PIPELINE_ROOT="${SLURM_SUBMIT_DIR:-/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/prosapia_binder_pipeline}"
 CONFIG="${CONFIG:-$PIPELINE_ROOT/config/slyb_hydra.yaml}"
-PIPELINE_PYTHON="${PIPELINE_PYTHON:-python3}"
+PIPELINE_PYTHON="${PIPELINE_PYTHON:-/data/leuven/392/vsc39230/slyb_envs/prosapia-pipeline/bin/python}"
 
-BASE=/scratch/brussel/vo/000/bvo00014/vsc39230
-CACHE="$BASE/cache/prosapia_binder_pipeline/boltz_runtime/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
+VSC_DATA=/data/leuven/392/vsc39230
+CACHE="$VSC_DATA/slyb_prosapia_cache/boltz_runtime/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 mkdir -p "$CACHE/tmp" "$CACHE/xdg" "$CACHE/triton" "$CACHE/cuda"
 export TMPDIR="$CACHE/tmp"
 export XDG_CACHE_HOME="$CACHE/xdg"

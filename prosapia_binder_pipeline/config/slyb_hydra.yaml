@@ -15,7 +15,7 @@ external:
   proteinmpnn_root: /data/leuven/392/vsc39230/software/ProteinMPNN
   proteinmpnn_python: /scratch/brussel/vo/000/bvo00014/vsc39230/venvs/rfd3-foundry/bin/python
   boltz_executable: boltz
-  boltz_cache: /scratch/brussel/vo/000/bvo00014/vsc39230/cache/boltz
+  boltz_cache: /data/leuven/392/vsc39230/slyb_prosapia_cache/boltz
 
 backbones:
   binder_length_min: 40
