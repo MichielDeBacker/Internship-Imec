@@ -1,0 +1,63 @@
+project:
+  name: slyb_vertical96
+  expected_backbones: 150
+  role: candidate
+
+paths:
+  base: /scratch/brussel/vo/000/bvo00014/vsc39230
+  repo: /scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec
+  work_root: /scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/prosapia_binder_pipeline/slyb_vertical96
+  backbone_glob: /scratch/brussel/vo/000/bvo00014/vsc39230/slyb/out/rfd3_vertical96_150_*/*_model_*.cif.gz
+
+external:
+  # Prosapia is reference/workbench inspiration only. Do not edit it from this pipeline.
+  prosapia_root: /scratch/brussel/vo/000/bvo00014/vsc39230/repos/prosapia
+  proteinmpnn_root: /scratch/brussel/vo/000/bvo00014/vsc39230/repos/ProteinMPNN
+  proteinmpnn_python: python
+  boltz_executable: boltz
+  boltz_cache: /scratch/brussel/vo/000/bvo00014/vsc39230/cache/boltz
+
+backbones:
+  binder_length_min: 40
+  binder_length_max: 80
+  target_length_min: 90
+  target_length_max: 102
+  canonical_target_a: A
+  canonical_target_b: B
+  canonical_binder: C
+
+sequencing:
+  model_name: v_48_020
+  use_soluble_model: false
+  num_sequences_per_backbone: 8
+  sampling_temperature: 0.15
+  backbone_noise: 0.0
+  batch_size: 8
+  seed_base: 210000
+
+boltz:
+  # 'all' means every generated MPNN sequence from every one of the 150 backbones.
+  sequences_per_backbone: all
+  diffusion_samples: 1
+  recycling_steps: 3
+  sampling_steps: 200
+  use_potentials: true
+  write_full_pae: false
+  write_full_pde: false
+
+  # A/B are structural templates. C is never templated.
+  template_force: true
+  template_threshold_angstrom: 1.0
+
+  # Templates condition the target; they do not mathematically freeze coordinates.
+  # Use 'empty' for reproducible single-sequence mode, 'server' to call MSA server,
+  # or set a path to an existing MSA file.
+  target_a_msa: empty
+  target_b_msa: empty
+  binder_msa: empty
+  msa_server_url: https://api.colabfold.com
+
+scoring:
+  # Boltz pair_chains_iptm is directional/asymmetric. For one scalar per interface,
+  # use max (AF3-like symmetric summary), while retaining both directions in the CSV.
+  pair_summary_mode: max

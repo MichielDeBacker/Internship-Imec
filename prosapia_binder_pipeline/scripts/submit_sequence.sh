@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG="${CONFIG:-$ROOT/config/slyb_hydra.yaml}"
+WORK=/data/leuven/392/vsc39230/slyb_prosapia_work/slyb_vertical96
+MANIFEST="$WORK/01_backbones/backbones.tsv"
+THROTTLE="${THROTTLE:-20}"
+
+[ -s "$MANIFEST" ] || { echo "Missing manifest: $MANIFEST" >&2; exit 1; }
+N=$(( $(wc -l < "$MANIFEST") - 1 ))
+[ "$N" -gt 0 ] || { echo "No backbones in manifest" >&2; exit 1; }
+
+mkdir -p "$ROOT/logs"
+cd "$ROOT"
+echo "Submitting $N sequencing tasks with max $THROTTLE concurrent"
+sbatch --array="0-$((N-1))%${THROTTLE}" --export=ALL,CONFIG="$CONFIG" slurm/sequence_array.sbatch

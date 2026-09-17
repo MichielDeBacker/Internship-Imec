@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+import argparse
+import csv
+import gzip
+import io
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+from scipy.spatial import cKDTree
+import biotite.structure as struc
+import biotite.structure.io.pdb as pdbio
+import biotite.structure.io.pdbx as pdbx
+
+BB = {'N','CA','C','O'}
+
+
+def load(path):
+    path = Path(path)
+    low = path.name.lower()
+    if low.endswith('.cif.gz'):
+        with gzip.open(path, 'rt') as fh:
+            f = pdbx.CIFFile.read(io.StringIO(fh.read()))
+        return pdbx.get_structure(f, model=1)
+    if low.endswith(('.cif','.mmcif')):
+        f = pdbx.CIFFile.read(path)
+        return pdbx.get_structure(f, model=1)
+    f = pdbio.PDBFile.read(path)
+    return f.get_structure(model=1)
+
+
+def chain_ids(a):
+    out=[]
+    for c in a.chain_id:
+        c=str(c)
+        if c not in out:
+            out.append(c)
+    return out
+
+
+def chain(a,cid):
+    return a[np.asarray([str(x)==str(cid) for x in a.chain_id],dtype=bool)]
+
+
+def ca(a):
+    return np.asarray(a.coord[np.asarray([str(x)=='CA' for x in a.atom_name],dtype=bool)],dtype=float)
+
+
+def backbone(a):
+    return np.asarray(a.coord[np.asarray([str(x) in BB for x in a.atom_name],dtype=bool)],dtype=float)
+
+
+def heavy(a):
+    if hasattr(a,'element'):
+        return a[np.asarray([str(x).upper()!='H' for x in a.element],dtype=bool)]
+    return a
+
+
+def kabsch(mobile,fixed):
+    mobile=np.asarray(mobile,float); fixed=np.asarray(fixed,float)
+    if mobile.shape != fixed.shape:
+        raise ValueError(f'alignment shape mismatch {mobile.shape} vs {fixed.shape}')
+    cm=mobile.mean(0); cf=fixed.mean(0)
+    x=mobile-cm; y=fixed-cf
+    u,_,vt=np.linalg.svd(x.T@y)
+    r=vt.T@u.T
+    if np.linalg.det(r)<0:
+        vt[-1]*=-1
+        r=vt.T@u.T
+    t=cf-cm@r.T
+    fit=mobile@r.T+t
+    rmsd=float(np.sqrt(np.mean(np.sum((fit-fixed)**2,axis=1))))
+    return r,t,rmsd
+
+
+def transformed(a,r,t):
+    b=a.copy(); b.coord=np.asarray(a.coord,float)@r.T+t; return b
+
+
+def min_dist(x,y):
+    if len(x)==0 or len(y)==0:
+        return 999.0
+    tree=cKDTree(np.asarray(y,float))
+    d,_=tree.query(np.asarray(x,float),k=1)
+    return float(np.min(d))
+
+
+def distinct_binder_contacts(binder,target,cutoff=5.0):
+    b=heavy(binder); t=heavy(target)
+    if len(b)==0 or len(t)==0:
+        return 0
+    tree=cKDTree(np.asarray(t.coord,float))
+    d,_=tree.query(np.asarray(b.coord,float),k=1)
+    residues=set()
+    for i,dist in enumerate(d):
+        if dist<=cutoff:
+            residues.add((str(b.chain_id[i]),int(b.res_id[i])))
+    return len(residues)
+
+
+def principal_angle(a,axis):
+    xyz=ca(a)
+    if len(xyz)<3:
+        return 999.0
+    xyz=xyz-xyz.mean(0)
+    vals,vecs=np.linalg.eigh(xyz.T@xyz)
+    long_axis=vecs[:,np.argmax(vals)]
+    long_axis/=np.linalg.norm(long_axis)
+    axis=np.asarray(axis,float); axis/=np.linalg.norm(axis)
+    dot=float(np.clip(abs(long_axis@axis),0.0,1.0))
+    return math.degrees(math.acos(dot))
+
+
+def write_pdb(a,path):
+    f=pdbio.PDBFile(); f.set_structure(a); f.write(path)
+
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument('--root',required=True)
+    ap.add_argument('--ring',required=True)
+    ap.add_argument('--geometry',required=True)
+    ap.add_argument('--out',required=True)
+    args=ap.parse_args()
+
+    root=Path(args.root); out=Path(args.out)
+    out.mkdir(parents=True,exist_ok=True)
+    pdbdir=out/'top_structures'; pdbdir.mkdir(exist_ok=True)
+    ring=load(args.ring)
+    geo=json.loads(Path(args.geometry).read_text())
+    order=list(geo['ring_order'])
+    axis=np.asarray(geo['ring_axis'],float)
+    max_angle=float(geo['maximum_vertical_angle_deg'])
+    ref_first,ref_second=geo['generation_pair']
+    ref_pair=np.concatenate([ca(chain(ring,ref_first)),ca(chain(ring,ref_second))],axis=0)
+    if order[(order.index(ref_first)+1)%len(order)] != ref_second:
+        raise SystemExit(f'generation pair {ref_first}->{ref_second} is not forward-adjacent in ring order')
+
+    files=sorted(root.rglob('*.cif.gz'))
+    rows=[]
+    for k,path in enumerate(files,1):
+        print(f'[{k}/{len(files)}] {path.name}')
+        row={'path':str(path)}
+        try:
+            st=load(path)
+            ids=chain_ids(st)
+            lengths={cid:len(ca(chain(st,cid))) for cid in ids}
+            binder_ids=[cid for cid in ids if 40<=lengths[cid]<=90]
+            target_ids=[cid for cid in ids if lengths[cid]==138]
+            if len(binder_ids)!=1:
+                raise ValueError(f'binder chain ambiguous: {lengths}')
+            if len(target_ids)!=2:
+                raise ValueError(f'target chains ambiguous: {lengths}')
+            binder=chain(st,binder_ids[0]).copy()
+            t1=chain(st,target_ids[0]).copy(); t2=chain(st,target_ids[1]).copy()
+
+            # Try both target-chain assignments; homomer sequence alone cannot determine direction.
+            options=[]
+            for first,second in ((t1,t2),(t2,t1)):
+                moving=np.concatenate([ca(first),ca(second)],axis=0)
+                r,t,rmsd=kabsch(moving,ref_pair)
+                options.append((rmsd,first,second,r,t))
+            target_rmsd,target_first,target_second,r0,t0=min(options,key=lambda x:x[0])
+            binder_native=transformed(binder,r0,t0)
+            angle=principal_angle(binder_native,axis)
+
+            placements=[]
+            min_contacts_1=999
+            min_contacts_2=999
+            ring_min=999.0
+            max_place_resid=0.0
+            for i,c1 in enumerate(order):
+                c2=order[(i+1)%len(order)]
+                dst_pair=np.concatenate([ca(chain(ring,c1)),ca(chain(ring,c2))],axis=0)
+                rp,tp,place_resid=kabsch(ref_pair,dst_pair)
+                bp=transformed(binder_native,rp,tp)
+                n1=distinct_binder_contacts(bp,chain(ring,c1),5.0)
+                n2=distinct_binder_contacts(bp,chain(ring,c2),5.0)
+                min_contacts_1=min(min_contacts_1,n1)
+                min_contacts_2=min(min_contacts_2,n2)
+                ring_min=min(ring_min,min_dist(backbone(bp),backbone(ring)))
+                max_place_resid=max(max_place_resid,place_resid)
+                placements.append(bp)
+
+            pair_min=999.0
+            for i in range(len(placements)):
+                bi=backbone(placements[i])
+                for j in range(i+1,len(placements)):
+                    pair_min=min(pair_min,min_dist(bi,backbone(placements[j])))
+
+            geom_ok=bool(
+                target_rmsd<=2.0 and
+                max_place_resid<=1.0 and
+                angle<=max_angle and
+                ring_min>=1.8 and
+                pair_min>=1.8 and
+                min_contacts_1>=3 and
+                min_contacts_2>=3
+            )
+            status='NEEDS_VISUAL_REVIEW' if geom_ok else 'REJECT_OR_REPAIR'
+            row.update({
+                'status':status,
+                'binder_residues':lengths[binder_ids[0]],
+                'target_fit_RMSD_A':round(target_rmsd,4),
+                'max_placement_residual_A':round(max_place_resid,4),
+                'vertical_angle_deg':round(angle,3),
+                'min_contacts_side1':min_contacts_1,
+                'min_contacts_side2':min_contacts_2,
+                'ring_backbone_min_A':round(ring_min,3),
+                'binder_binder_min_A':round(pair_min,3),
+                'error':'',
+            })
+
+            if geom_ok:
+                stem=path.name.replace('.cif.gz','')
+                b=binder_native.copy(); b.chain_id[:]='Z'
+                groove=struc.concatenate([chain(ring,ref_first),chain(ring,ref_second),b])
+                write_pdb(b,pdbdir/f'{stem}_binder.pdb')
+                write_pdb(groove,pdbdir/f'{stem}_groove.pdb')
+                letters=list('LMNOPQRSTUV')
+                copies=[]
+                for idx,bp in enumerate(placements):
+                    x=bp.copy(); x.chain_id[:]=letters[idx]; copies.append(x)
+                full=struc.concatenate([ring]+copies)
+                write_pdb(full,pdbdir/f'{stem}_C11_11binders.pdb')
+        except Exception as e:
+            row.update({'status':'REJECT_OR_REPAIR','error':repr(e)})
+        rows.append(row)
+
+    def key(x):
+        return (
+            x.get('status')!='NEEDS_VISUAL_REVIEW',
+            float(x.get('vertical_angle_deg',999) or 999),
+            -min(int(x.get('min_contacts_side1',0) or 0),int(x.get('min_contacts_side2',0) or 0)),
+        )
+    rows.sort(key=key)
+    for i,row in enumerate(rows,1): row['rank']=i
+    fields=['rank','status','path','binder_residues','target_fit_RMSD_A','max_placement_residual_A','vertical_angle_deg','min_contacts_side1','min_contacts_side2','ring_backbone_min_A','binder_binder_min_A','error']
+    with (out/'screen.tsv').open('w',newline='') as fh:
+        w=csv.DictWriter(fh,delimiter='\t',lineterminator='\n',fieldnames=fields)
+        w.writeheader()
+        for row in rows:
+            w.writerow({f:row.get(f,'') for f in fields})
+    review=sum(x.get('status')=='NEEDS_VISUAL_REVIEW' for x in rows)
+    print('VERTICAL C11 SCREEN COMPLETE')
+    print('total:',len(rows))
+    print('NEEDS_VISUAL_REVIEW:',review)
+    print('REJECT_OR_REPAIR:',len(rows)-review)
+    print('summary:',out/'screen.tsv')
+    print('PDBs:',pdbdir)
+
+
+if __name__=='__main__':
+    main()

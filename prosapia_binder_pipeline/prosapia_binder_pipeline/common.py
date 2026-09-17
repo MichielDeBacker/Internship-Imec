@@ -1,0 +1,142 @@
+from __future__ import annotations
+
+import csv
+import json
+import os
+import re
+import subprocess
+from pathlib import Path
+from typing import Any, Iterable
+
+import yaml
+
+
+def load_config(path: str | Path) -> dict[str, Any]:
+    path = Path(path)
+    with path.open() as handle:
+        cfg = yaml.safe_load(handle)
+    if not isinstance(cfg, dict):
+        raise ValueError(f"Config must contain a YAML mapping: {path}")
+    return cfg
+
+
+def expand_path(value: str | Path) -> Path:
+    return Path(os.path.expandvars(os.path.expanduser(str(value))))
+
+
+def work_path(cfg: dict[str, Any], *parts: str) -> Path:
+    return expand_path(cfg["paths"]["work_root"]).joinpath(*parts)
+
+
+def read_tsv(path: str | Path) -> list[dict[str, str]]:
+    with Path(path).open(newline="") as handle:
+        return list(csv.DictReader(handle, delimiter="\t"))
+
+
+def write_tsv(path: str | Path, rows: Iterable[dict[str, Any]], fieldnames: list[str]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, delimiter="\t", fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def write_csv(path: str | Path, rows: Iterable[dict[str, Any]], fieldnames: list[str]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def atomic_json(path: str | Path, payload: dict[str, Any]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    tmp.replace(path)
+
+
+def run(cmd: list[str], *, env: dict[str, str] | None = None, cwd: str | Path | None = None) -> None:
+    printable = " ".join(cmd)
+    print(f"+ {printable}", flush=True)
+    subprocess.run(cmd, check=True, env=env, cwd=cwd)
+
+
+def safe_id(text: str) -> str:
+    text = re.sub(r"[^A-Za-z0-9_.-]+", "_", text)
+    return text.strip("_")
+
+
+def get_indexed_record(path: str | Path, index: int, *, delimiter: str = "\t") -> dict[str, str]:
+    with Path(path).open(newline="") as handle:
+        rows = list(csv.DictReader(handle, delimiter=delimiter))
+    if not 0 <= index < len(rows):
+        raise IndexError(f"Index {index} outside [0, {len(rows) - 1}] for {path}")
+    return rows[index]
+
+
+def fasta_records(path: str | Path) -> list[tuple[str, str]]:
+    records: list[tuple[str, str]] = []
+    header: str | None = None
+    sequence: list[str] = []
+    with Path(path).open() as handle:
+        for raw in handle:
+            line = raw.strip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                if header is not None:
+                    records.append((header, "".join(sequence)))
+                header = line[1:]
+                sequence = []
+            else:
+                sequence.append(line)
+    if header is not None:
+        records.append((header, "".join(sequence)))
+    return records
+
+
+def parse_kv_header(header: str) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for item in header.split(","):
+        if "=" not in item:
+            continue
+        key, value = item.split("=", 1)
+        out[key.strip()] = value.strip()
+    return out
+
+
+def ensure_file(path: str | Path, label: str = "file") -> Path:
+    path = Path(path)
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing {label}: {path}")
+    return path
+
+
+def ensure_dir(path: str | Path, label: str = "directory") -> Path:
+    path = Path(path)
+    if not path.is_dir():
+        raise FileNotFoundError(f"Missing {label}: {path}")
+    return path
+
+
+def pair_value(matrix: dict[str, dict[str, float]], i: int, j: int, mode: str) -> tuple[float, float, float]:
+    """Return (summary, i_to_j, j_to_i) from Boltz pair_chains_iptm."""
+    a = float(matrix[str(i)][str(j)])
+    b = float(matrix[str(j)][str(i)])
+    if mode == "max":
+        summary = max(a, b)
+    elif mode == "mean":
+        summary = (a + b) / 2.0
+    elif mode == "min":
+        summary = min(a, b)
+    elif mode == "forward":
+        summary = a
+    else:
+        raise ValueError(f"Unsupported pair_summary_mode={mode!r}; use max, mean, min, or forward")
+    return summary, a, b
