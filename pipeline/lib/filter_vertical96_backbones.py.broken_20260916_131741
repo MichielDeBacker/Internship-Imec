@@ -1,0 +1,525 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import csv
+import gzip
+import io
+import math
+import sys
+
+import numpy as np
+from scipy.spatial import cKDTree
+
+import biotite.structure.io.pdb as pdb
+import biotite.structure.io.pdbx as pdbx
+
+
+BASE = Path("/scratch/brussel/vo/000/bvo00014/vsc39230")
+REPO = BASE / "repos/Internship-Imec"
+
+TARGET = REPO / "work/vertical96_150/target_AB_historical96.pdb"
+RING   = BASE / "slyb/inputs/target_ring_C11.pdb"
+OUTROOT = BASE / "slyb/out"
+
+CSV_OUT = REPO / "work/vertical96_150/vertical96_screen.csv"
+
+TARGET_RMSD_MAX = 2.0
+CONTACT_CUTOFF = 5.0
+MIN_CONTACT_RESIDUES = 3
+VERTICAL_ANGLE_MAX = 20.0
+MIN_BB_DISTANCE = 1.8
+
+BACKBONE = {"N", "CA", "C", "O"}
+
+
+def load_structure(path):
+    path = Path(path)
+
+    if path.name.endswith(".cif.gz"):
+        with gzip.open(path, "rt") as f:
+            text = f.read()
+        cif = pdbx.CIFFile.read(io.StringIO(text))
+        return pdbx.get_structure(cif, model=1)
+
+    if path.suffix == ".cif":
+        cif = pdbx.CIFFile.read(str(path))
+        return pdbx.get_structure(cif, model=1)
+
+    if path.suffix == ".pdb":
+        pf = pdb.PDBFile.read(str(path))
+        return pf.get_structure(model=1)
+
+    raise ValueError(f"Unsupported structure: {path}")
+
+
+def chain_ids(arr):
+    return list(dict.fromkeys(str(x) for x in arr.chain_id))
+
+
+def chain(arr, cid):
+    return arr[arr.chain_id == cid]
+
+
+def ca_coords(arr):
+    return arr[arr.atom_name == "CA"].coord.astype(float)
+
+
+def ca_count(arr):
+    return int(np.sum(arr.atom_name == "CA"))
+
+
+def heavy(arr):
+    elem = np.asarray(arr.element, dtype=str)
+    mask = np.char.upper(elem) != "H"
+    return arr[mask]
+
+
+def backbone_coords(arr):
+    names = np.asarray(arr.atom_name, dtype=str)
+    mask = np.isin(names, list(BACKBONE))
+    return arr[mask].coord.astype(float)
+
+
+def kabsch(P, Q):
+    P = np.asarray(P, float)
+    Q = np.asarray(Q, float)
+
+    pc = P.mean(axis=0)
+    qc = Q.mean(axis=0)
+
+    X = P - pc
+    Y = Q - qc
+
+    H = X.T @ Y
+    U, s, Vt = np.linalg.svd(H)
+
+    R = Vt.T @ U.T
+
+    if np.linalg.det(R) < 0:
+        Vt[-1, :] *= -1
+        R = Vt.T @ U.T
+
+    fitted = X @ R.T + qc
+    rmsd = np.sqrt(np.mean(np.sum((fitted - Q) ** 2, axis=1)))
+
+    return R, pc, qc, float(rmsd)
+
+
+def apply_fit(coords, fit):
+    R, pc, qc, _ = fit
+    return (np.asarray(coords) - pc) @ R.T + qc
+
+
+def principal_axis(coords):
+    X = np.asarray(coords) - np.mean(coords, axis=0)
+    cov = X.T @ X
+    vals, vecs = np.linalg.eigh(cov)
+    v = vecs[:, np.argmax(vals)]
+    return v / np.linalg.norm(v)
+
+
+def angle_deg(a, b):
+    a = a / np.linalg.norm(a)
+    b = b / np.linalg.norm(b)
+    c = np.clip(abs(np.dot(a, b)), 0.0, 1.0)
+    return float(np.degrees(np.arccos(c)))
+
+
+def rotation_matrix(axis, theta):
+    axis = np.asarray(axis, float)
+    axis /= np.linalg.norm(axis)
+    x, y, z = axis
+
+    c = math.cos(theta)
+    s = math.sin(theta)
+    C = 1.0 - c
+
+    return np.array([
+        [c+x*x*C,   x*y*C-z*s, x*z*C+y*s],
+        [y*x*C+z*s, c+y*y*C,   y*z*C-x*s],
+        [z*x*C-y*s, z*y*C+x*s, c+z*z*C],
+    ])
+
+
+def rotate_about_axis(coords, center, axis, theta):
+    R = rotation_matrix(axis, theta)
+    return (np.asarray(coords) - center) @ R.T + center
+
+
+def contact_residue_count(binder_arr, binder_coords, target_arr, cutoff=5.0):
+    b = heavy(binder_arr)
+    t = heavy(target_arr)
+
+    # Coordinates corresponding to heavy binder atoms
+    elem = np.asarray(binder_arr.element, dtype=str)
+    bmask = np.char.upper(elem) != "H"
+    bc = np.asarray(binder_coords)[bmask]
+
+    if len(bc) == 0 or len(t) == 0:
+        return 0
+
+    tree = cKDTree(t.coord.astype(float))
+    d, _ = tree.query(bc, k=1)
+
+    close = d <= cutoff
+
+    residues = {
+        int(r)
+        for r in np.asarray(b.res_id)[close]
+    }
+    return len(residues)
+
+
+def ring_geometry(ring):
+    cids = chain_ids(ring)
+
+    centroids = []
+    for cid in cids:
+        C = ca_coords(chain(ring, cid))
+        centroids.append(C.mean(axis=0))
+
+    centroids = np.asarray(centroids)
+    center = centroids.mean(axis=0)
+
+    X = centroids - center
+    cov = X.T @ X
+    vals, vecs = np.linalg.eigh(cov)
+
+    # Ring normal = direction with smallest spread
+    axis = vecs[:, np.argmin(vals)]
+    axis /= np.linalg.norm(axis)
+
+    # Make a reproducible in-plane basis
+    e1 = centroids[0] - center
+    e1 -= axis * np.dot(e1, axis)
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(axis, e1)
+
+    angles = []
+    for c in centroids:
+        v = c - center
+        angles.append(math.atan2(np.dot(v, e2), np.dot(v, e1)))
+
+    order = np.argsort(angles)
+    ordered_cids = [cids[i] for i in order]
+
+    return center, axis, ordered_cids
+
+
+def are_adjacent(cid1, cid2, ordered):
+    i = ordered.index(cid1)
+    j = ordered.index(cid2)
+    n = len(ordered)
+
+    return ((i-j) % n == 1) or ((j-i) % n == 1)
+
+
+def best_adjacent_contacts(binder_arr, binder_xyz, ring, ordered):
+    counts = {}
+
+    for cid in ordered:
+        counts[cid] = contact_residue_count(
+            binder_arr,
+            binder_xyz,
+            chain(ring, cid),
+            CONTACT_CUTOFF
+        )
+
+    best = None
+
+    n = len(ordered)
+    for i in range(n):
+        a = ordered[i]
+        b = ordered[(i + 1) % n]
+
+        ca = counts[a]
+        cb = counts[b]
+
+        score = (min(ca, cb), ca + cb)
+
+        if best is None or score > best[0]:
+            best = (score, a, b, ca, cb)
+
+    _, a, b, ca, cb = best
+    return a, b, ca, cb
+
+
+def min_copy_bb_distance(copy_coords):
+    global_min = float("inf")
+
+    for i in range(len(copy_coords)):
+        tree = cKDTree(copy_coords[i])
+
+        for j in range(i + 1, len(copy_coords)):
+            d, _ = tree.query(copy_coords[j], k=1)
+            m = float(np.min(d))
+
+            if m < global_min:
+                global_min = m
+
+    return global_min
+
+
+def fit_target_pair(candidate, reference):
+    cand_cids = chain_ids(candidate)
+    ref_cids = chain_ids(reference)
+
+    # Binder = chain with fewest CA atoms.
+    cand_sorted = sorted(
+        cand_cids,
+        key=lambda c: ca_count(chain(candidate, c))
+    )
+
+    if len(cand_sorted) != 3:
+        raise ValueError(f"Expected 3 chains, found {cand_cids}")
+
+    binder_cid = cand_sorted[0]
+    target_cids = cand_sorted[1:]
+
+    # Both target chains should be the two long 96-aa chains.
+    ref_sorted = sorted(
+        ref_cids,
+        key=lambda c: ca_count(chain(reference, c)),
+        reverse=True
+    )[:2]
+
+    candidates = []
+
+    for rorder in [
+        ref_sorted,
+        list(reversed(ref_sorted)),
+    ]:
+        P = np.concatenate([
+            ca_coords(chain(candidate, target_cids[0])),
+            ca_coords(chain(candidate, target_cids[1])),
+        ], axis=0)
+
+        Q = np.concatenate([
+            ca_coords(chain(reference, rorder[0])),
+            ca_coords(chain(reference, rorder[1])),
+        ], axis=0)
+
+        if P.shape != Q.shape:
+            continue
+
+        fit = kabsch(P, Q)
+        candidates.append((fit[3], fit, binder_cid, target_cids, rorder))
+
+    if not candidates:
+        raise ValueError("Could not match generated target pair to reference")
+
+    return min(candidates, key=lambda x: x[0])
+
+
+def screen_one(path, reference, ring, ring_center, ring_axis, ring_order):
+    arr = load_structure(path)
+
+    target_rmsd, fit, binder_cid, target_cids, ref_order = fit_target_pair(
+        arr, reference
+    )
+
+    binder = chain(arr, binder_cid)
+    t1 = chain(arr, target_cids[0])
+    t2 = chain(arr, target_cids[1])
+
+    binder_len = ca_count(binder)
+
+    # Contacts in original generated complex
+    c1 = contact_residue_count(
+        binder, binder.coord.astype(float), t1, CONTACT_CUTOFF
+    )
+    c2 = contact_residue_count(
+        binder, binder.coord.astype(float), t2, CONTACT_CUTOFF
+    )
+
+    # Put binder into canonical/native pair coordinates
+    binder_fit_xyz = apply_fit(binder.coord.astype(float), fit)
+    binder_fit_ca = apply_fit(ca_coords(binder), fit)
+
+    baxis = principal_axis(binder_fit_ca)
+    vertical_angle = angle_deg(baxis, ring_axis)
+
+    # Generate all 11 symmetry copies
+    full_copies = []
+    bb_copies = []
+
+    # Backbone mask once
+    bbmask = np.isin(
+        np.asarray(binder.atom_name, dtype=str),
+        list(BACKBONE)
+    )
+
+    per_copy = []
+
+    for k in range(11):
+        theta = 2.0 * math.pi * k / 11.0
+
+        xyz = rotate_about_axis(
+            binder_fit_xyz,
+            ring_center,
+            ring_axis,
+            theta
+        )
+
+        full_copies.append(xyz)
+        bb_copies.append(xyz[bbmask])
+
+        a, b, ca, cb = best_adjacent_contacts(
+            binder,
+            xyz,
+            ring,
+            ring_order
+        )
+
+        per_copy.append((a, b, ca, cb))
+
+    weakest_partner = min(
+        min(ca, cb)
+        for _, _, ca, cb in per_copy
+    )
+
+    copies_contact_ok = all(
+        ca >= MIN_CONTACT_RESIDUES and cb >= MIN_CONTACT_RESIDUES
+        for _, _, ca, cb in per_copy
+    )
+
+    min_bb = min_copy_bb_distance(bb_copies)
+
+    target_ok = target_rmsd <= TARGET_RMSD_MAX
+    initial_contacts_ok = (
+        c1 >= MIN_CONTACT_RESIDUES
+        and c2 >= MIN_CONTACT_RESIDUES
+    )
+    vertical_ok = vertical_angle <= VERTICAL_ANGLE_MAX
+    clash_ok = min_bb >= MIN_BB_DISTANCE
+
+    hard_pass = all([
+        target_ok,
+        initial_contacts_ok,
+        vertical_ok,
+        copies_contact_ok,
+        clash_ok,
+    ])
+
+    status = (
+        "NEEDS_VISUAL_REVIEW"
+        if hard_pass
+        else "REJECT_OR_REPAIR"
+    )
+
+    reasons = []
+
+    if not target_ok:
+        reasons.append("target_rmsd")
+    if not initial_contacts_ok:
+        reasons.append("initial_contacts")
+    if not vertical_ok:
+        reasons.append("vertical_angle")
+    if not copies_contact_ok:
+        reasons.append("C11_contacts")
+    if not clash_ok:
+        reasons.append("binder_binder_clash")
+
+    return {
+        "file": str(path),
+        "binder_chain": binder_cid,
+        "binder_length": binder_len,
+        "target_chain_1": target_cids[0],
+        "target_chain_2": target_cids[1],
+        "target_CA_RMSD_A": round(target_rmsd, 3),
+        "contacts_partner1": c1,
+        "contacts_partner2": c2,
+        "vertical_angle_deg": round(vertical_angle, 2),
+        "C11_weakest_partner_contacts": weakest_partner,
+        "C11_all_copies_contact_ok": copies_contact_ok,
+        "min_binder_binder_BB_distance_A": round(min_bb, 3),
+        "status": status,
+        "reasons": ";".join(reasons),
+    }
+
+
+def main():
+    reference = load_structure(TARGET)
+    ring = load_structure(RING)
+
+    ring_center, ring_axis, ring_order = ring_geometry(ring)
+
+    files = sorted(
+        OUTROOT.glob(
+            "rfd3_vertical96_150_*/task_*/*_model_*.cif.gz"
+        )
+    )
+
+    print(f"Found {len(files)} backbone files")
+
+    if len(files) != 150:
+        print(
+            f"WARNING: expected 150, found {len(files)}",
+            file=sys.stderr
+        )
+
+    rows = []
+
+    for i, path in enumerate(files, 1):
+        try:
+            r = screen_one(
+                path,
+                reference,
+                ring,
+                ring_center,
+                ring_axis,
+                ring_order
+            )
+        except Exception as e:
+            r = {
+                "file": str(path),
+                "binder_chain": "",
+                "binder_length": "",
+                "target_chain_1": "",
+                "target_chain_2": "",
+                "target_CA_RMSD_A": "",
+                "contacts_partner1": "",
+                "contacts_partner2": "",
+                "vertical_angle_deg": "",
+                "C11_weakest_partner_contacts": "",
+                "C11_all_copies_contact_ok": False,
+                "min_binder_binder_BB_distance_A": "",
+                "status": "REJECT_OR_REPAIR",
+                "reasons": f"parse_or_geometry_error:{e}",
+            }
+
+        rows.append(r)
+
+        print(
+            f"[{i:3d}/{len(files)}] "
+            f"{Path(r['file']).name} "
+            f"-> {r['status']} "
+            f"{r['reasons']}"
+        )
+
+    CSV_OUT.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(CSV_OUT, "w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=list(rows[0].keys())
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    passed = sum(
+        r["status"] == "NEEDS_VISUAL_REVIEW"
+        for r in rows
+    )
+
+    print()
+    print("================================")
+    print(f"screened: {len(rows)}")
+    print(f"NEEDS_VISUAL_REVIEW: {passed}")
+    print(f"REJECT_OR_REPAIR: {len(rows)-passed}")
+    print(f"CSV: {CSV_OUT}")
+    print("================================")
+
+
+if __name__ == "__main__":
+    main()

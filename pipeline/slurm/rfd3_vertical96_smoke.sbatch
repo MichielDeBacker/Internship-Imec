@@ -1,0 +1,107 @@
+#!/bin/bash -l
+#SBATCH --job-name=slyb96_smoke
+#SBATCH --nodes=1
+#SBATCH --gpus-per-node=1
+#SBATCH --cpus-per-gpu=12
+#SBATCH --mem=64G
+#SBATCH --time=01:00:00
+#SBATCH --output=/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/logs/slyb96_smoke_%j.out
+#SBATCH --error=/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/logs/slyb96_smoke_%j.out
+
+
+# Keep runtime/JIT caches off HOME quota
+export TMPDIR="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/rfd3_tmp"
+export XDG_CACHE_HOME="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/rfd3_xdg"
+export TRITON_CACHE_DIR="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/triton_cache"
+export CUDA_CACHE_PATH="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/cuda_cache"
+
+mkdir -p \
+  "$TMPDIR" \
+  "$XDG_CACHE_HOME" \
+  "$TRITON_CACHE_DIR" \
+  "$CUDA_CACHE_PATH"
+
+
+set -Eeuo pipefail
+
+BASE=/scratch/brussel/vo/000/bvo00014/vsc39230
+
+SLYB="$BASE/slyb"
+REPO="$BASE/repos/Internship-Imec"
+
+WORK="$REPO/work/vertical96_150"
+
+RFDENV="$BASE/venvs/rfd3-foundry"
+CKPT="$BASE/models/foundry_checkpoints"
+
+RUN="$SLYB/out/rfd3_vertical96_smoke_${SLURM_JOB_ID}"
+
+module purge
+module load Python/3.12.3-GCCcore-13.3.0
+
+test -f "$WORK/CPU96_READY"
+test -f "$RFDENV/RFD3_READY"
+
+source "$RFDENV/bin/activate"
+
+export FOUNDRY_CHECKPOINT_DIRS="$CKPT"
+
+mkdir -p "$RUN"
+
+echo "=========================================="
+echo "SLYB historical96 RFD3 smoke"
+echo "job=$SLURM_JOB_ID"
+echo "host=$(hostname)"
+echo "run=$RUN"
+echo "=========================================="
+
+nvidia-smi
+
+python - <<'PY'
+import torch
+
+print(
+    "CUDA:",
+    torch.cuda.is_available()
+)
+
+if not torch.cuda.is_available():
+    raise SystemExit(
+        "CUDA unavailable"
+    )
+
+print(
+    "GPU:",
+    torch.cuda.get_device_name(0)
+)
+PY
+
+rfd3 design \
+    inputs="$WORK/vertical96_spec.json" \
+    out_dir="$RUN" \
+    n_batches=1 \
+    diffusion_batch_size=1 \
+    inference_sampler.num_timesteps=20 \
+    inference_sampler.step_scale=3 \
+    inference_sampler.gamma_0=0.2 \
+    prevalidate_inputs=True \
+    skip_existing=False \
+    dump_trajectories=False
+
+COUNT=$(
+    find "$RUN" \
+    -type f \
+    -name '*_model_0.cif.gz' \
+    | wc -l
+)
+
+echo "generated=$COUNT"
+echo "expected=3"
+
+if [ "$COUNT" -ne 3 ]; then
+    exit 30
+fi
+
+touch "$RUN/SMOKE_OK"
+
+echo "SMOKE96 PASS"

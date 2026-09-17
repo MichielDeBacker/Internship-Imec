@@ -1,0 +1,121 @@
+name	class	status	target_fit_CA_RMSD_A	monomer_fit_CA_RMSD_A	neighbor_residual_A	target_BB_min_A	binder_pair_BB_min_A	contacts_partner1_min	contacts_partner2_min	detail	error
+design0	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design0.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=50, native=138"
+design1	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design1.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=37, native=138"
+design2	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design2.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+design6	parent_backbone	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/design6.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d2_s0	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d2_s0.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+d2_s1	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d2_s1.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=51, native=138"
+d1_s3	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d1_s3.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=37, native=138"
+d6_s6	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s6.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d6_s3	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s3.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"
+d6_s7	placed_rf3_monomer	ERROR								/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/geometry/details/d6_s7.json	"/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends(""networkx.backends""))
+Traceback (most recent call last):
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 615, in <module>
+    main()
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 591, in main
+    result = evaluate(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 322, in evaluate
+    target_id, binder_id = detect_target_binder(
+  File ""/rhea/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/pipeline/lib/c11_geometry.py"", line 237, in detect_target_binder
+    raise ValueError(
+ValueError: Target/native CA count mismatch: design chain A=38, native=138"

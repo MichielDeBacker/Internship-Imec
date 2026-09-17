@@ -1,0 +1,11 @@
+/scratch/brussel/vo/000/bvo00014/vsc39230/venvs/slyb-geometry/lib64/python3.9/site-packages/networkx/utils/backends.py:135: RuntimeWarning: networkx backend defined more than once: nx-loopback
+  backends.update(_get_backends("networkx.backends"))
+usage: check_rfd3_symmetry.py [-h] --root ROOT --ring RING
+                              [--json-out JSON_OUT] [--csv-out CSV_OUT]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --root ROOT
+  --ring RING
+  --json-out JSON_OUT
+  --csv-out CSV_OUT

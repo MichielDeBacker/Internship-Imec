@@ -22,3 +22,6 @@ nohup.out
 # Editors / OS
 .vscode/
 .DS_Store
+
+# Hydra runtime artifacts
+/work/

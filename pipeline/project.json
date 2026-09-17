@@ -1,0 +1,35 @@
+{
+  "project": "SlyB C11 adjacent-subunit binder",
+  "default_slyb_root": "/scratch/brussel/vo/000/bvo00014/vsc39230/slyb",
+
+  "targets": {
+    "ring": "inputs/target_ring_C11.pdb",
+    "duo": "inputs/target_duo_soluble.pdb",
+    "trio": "inputs/target_trio_soluble.pdb",
+    "penta": "inputs/target_penta_soluble.pdb"
+  },
+
+  "designs": {
+    "design0": "sequence_design/inputs/design0.cif",
+    "design1": "sequence_design/inputs/design1.cif",
+    "design2": "sequence_design/inputs/design2.cif",
+    "design6": "sequence_design/inputs/design6.cif"
+  },
+
+  "primary_candidates": {
+    "d2_s0": "sequence_design/out/rf3_primary_50056967/d2_s0/d2_s0_model.cif",
+    "d1_s3": "sequence_design/out/rf3_primary_50056967/d1_s3/d1_s3_model.cif",
+    "d6_s6": "sequence_design/out/rf3_primary_50056967/d6_s6/d6_s6_model.cif"
+  },
+
+  "reserve_and_controls": {
+    "d2_s1": "sequence_design/out/rf3_primary_50056967/d2_s1/d2_s1_model.cif",
+    "d6_s3": "sequence_design/out/rf3_primary_50056967/d6_s3/d6_s3_model.cif",
+    "d6_s7": "sequence_design/out/rf3_primary_50056967/d6_s7/d6_s7_model.cif"
+  },
+
+  "rfd3": {
+    "authorized": false,
+    "reason": "Geometry review and target hotspot selection required before new diffusion."
+  }
+}

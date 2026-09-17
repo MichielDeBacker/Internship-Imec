@@ -1,0 +1,310 @@
+#!/usr/bin/env python3
+import argparse
+import itertools
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+from scipy.spatial import cKDTree
+import biotite.structure as struc
+import biotite.structure.io.pdb as pdbio
+import biotite.structure.io.pdbx as pdbx
+
+
+def concat_atom_arrays(arrays):
+    """Biotite 0.40 compatible AtomArray concatenation."""
+    arrays = list(arrays)
+    if not arrays:
+        raise ValueError("Cannot concatenate an empty AtomArray list")
+    out = arrays[0].copy()
+    for arr in arrays[1:]:
+        out = out + arr
+    return out
+
+
+
+def load(path):
+    path = Path(path)
+    if path.suffix.lower() == '.pdb':
+        f = pdbio.PDBFile.read(path)
+        return f.get_structure(model=1)
+    f = pdbx.CIFFile.read(path)
+    return pdbx.get_structure(f, model=1)
+
+
+def chain_ids(a):
+    out = []
+    for c in a.chain_id:
+        c = str(c)
+        if c not in out:
+            out.append(c)
+    return out
+
+
+def get_chain(a, cid):
+    return a[np.asarray([str(x) == str(cid) for x in a.chain_id], dtype=bool)]
+
+
+def ca(a):
+    return np.asarray(a.coord[np.asarray([str(x) == 'CA' for x in a.atom_name], dtype=bool)], dtype=float)
+
+
+def kabsch(mobile, fixed):
+    mobile = np.asarray(mobile, dtype=float)
+    fixed = np.asarray(fixed, dtype=float)
+    if mobile.shape != fixed.shape:
+        raise ValueError(f'Kabsch shape mismatch: {mobile.shape} vs {fixed.shape}')
+    if len(mobile) < 3:
+        raise ValueError('Need >=3 points for alignment')
+    cm = mobile.mean(axis=0)
+    cf = fixed.mean(axis=0)
+    x = mobile - cm
+    y = fixed - cf
+    u, _, vt = np.linalg.svd(x.T @ y)
+    r = vt.T @ u.T
+    if np.linalg.det(r) < 0:
+        vt[-1, :] *= -1
+        r = vt.T @ u.T
+    t = cf - cm @ r.T
+    fit = mobile @ r.T + t
+    rmsd = float(np.sqrt(np.mean(np.sum((fit - fixed) ** 2, axis=1))))
+    return r, t, rmsd
+
+
+def transform(a, r, t):
+    b = a.copy()
+    b.coord = np.asarray(a.coord, dtype=float) @ r.T + t
+    return b
+
+
+def ring_geometry(ring):
+    ids = chain_ids(ring)
+    coms = np.asarray([ca(get_chain(ring, cid)).mean(axis=0) for cid in ids])
+    centre = coms.mean(axis=0)
+    centered = coms - centre
+    vals, vecs = np.linalg.eigh(centered.T @ centered)
+    axis_i = int(np.argmin(vals))
+    axis = vecs[:, axis_i]
+    axis /= np.linalg.norm(axis)
+    plane = [i for i in np.argsort(vals)[::-1] if i != axis_i]
+    e1, e2 = vecs[:, plane[0]], vecs[:, plane[1]]
+    order = []
+    for cid, xyz in zip(ids, centered):
+        angle = math.atan2(float(xyz @ e2), float(xyz @ e1))
+        order.append((angle, cid))
+    order.sort()
+    return [x[1] for x in order], centre, axis
+
+
+def match_penta_to_ring(penta, ring):
+    mobile, fixed = [], []
+    for cid in chain_ids(penta):
+        if cid not in chain_ids(ring):
+            continue
+        pc = get_chain(penta, cid)
+        rc = get_chain(ring, cid)
+        ref = {int(rc.res_id[i]): rc.coord[i] for i in range(len(rc)) if str(rc.atom_name[i]) == 'CA'}
+        for i in range(len(pc)):
+            if str(pc.atom_name[i]) != 'CA':
+                continue
+            rid = int(pc.res_id[i])
+            if rid in ref:
+                mobile.append(pc.coord[i])
+                fixed.append(ref[rid])
+    if len(mobile) < 100:
+        raise ValueError(f'Only {len(mobile)} penta/native CA matches; expected >=100')
+    return kabsch(np.asarray(mobile), np.asarray(fixed))
+
+
+def binder_contact_residues(binder, target, cutoff=5.0):
+    tree = cKDTree(np.asarray(target.coord, dtype=float))
+    d, _ = tree.query(np.asarray(binder.coord, dtype=float), k=1)
+    hits = set()
+    for i, dist in enumerate(d):
+        if dist <= cutoff:
+            hits.add(int(binder.res_id[i]))
+    return len(hits)
+
+
+def hotspot_candidates(target, binder, axis, centre):
+    btree = cKDTree(np.asarray(binder.coord, dtype=float))
+    residues = {}
+    for i in range(len(target)):
+        residues.setdefault(int(target.res_id[i]), []).append(i)
+    rows = []
+    for rid, idxs in residues.items():
+        ca_idx = [i for i in idxs if str(target.atom_name[i]) == 'CA']
+        if not ca_idx:
+            continue
+        atom_idxs = [i for i in idxs if str(target.atom_name[i]) not in {'N','CA','C','O'}]
+        if not atom_idxs:
+            atom_idxs = idxs
+        xyz = np.asarray(target.coord[atom_idxs], dtype=float)
+        d, _ = btree.query(xyz, k=1)
+        j = int(np.argmin(d))
+        best_atom_i = atom_idxs[j]
+        projection = float((np.asarray(target.coord[ca_idx[0]], dtype=float) - centre) @ axis)
+        rows.append({
+            'resid': rid,
+            'atom': str(target.atom_name[best_atom_i]),
+            'distance': float(d[j]),
+            'projection': projection,
+        })
+    if len(rows) < 4:
+        raise ValueError('Too few hotspot candidates')
+    rows.sort(key=lambda x: x['distance'])
+    near = rows[:14]
+    low = min(near, key=lambda x: x['projection'])
+    high = max(near, key=lambda x: x['projection'])
+    selected = [low]
+    if high['resid'] != low['resid']:
+        selected.append(high)
+    if len(selected) < 2:
+        for x in near:
+            if x['resid'] != selected[0]['resid']:
+                selected.append(x)
+                break
+    return selected[:2]
+
+
+def write_pdb(a, path):
+    f = pdbio.PDBFile()
+    f.set_structure(a)
+    f.write(path)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--ring', required=True)
+    ap.add_argument('--penta', required=True)
+    ap.add_argument('--parent', required=True)
+    ap.add_argument('--target-out', required=True)
+    ap.add_argument('--spec-out', required=True)
+    ap.add_argument('--geometry-out', required=True)
+    args = ap.parse_args()
+
+    ring = load(args.ring)
+    penta = load(args.penta)
+    parent = load(args.parent)
+    order, centre, axis = ring_geometry(ring)
+
+    if 'A' not in order or 'B' not in order:
+        raise SystemExit(f'Native ring lacks A/B chains: {order}')
+    ia, ib = order.index('A'), order.index('B')
+    if order[(ia + 1) % len(order)] == 'B':
+        ref_first, ref_second = 'A', 'B'
+    elif order[(ib + 1) % len(order)] == 'A':
+        ref_first, ref_second = 'B', 'A'
+    else:
+        raise SystemExit(f'Native A/B are not adjacent in ring order: {order}')
+
+    pids = chain_ids(parent)
+    if len(pids) != 2:
+        raise SystemExit(f'design2 should have 2 chains, found {pids}')
+    lengths = {cid: len(ca(get_chain(parent, cid))) for cid in pids}
+    binder_id = min(pids, key=lambda x: lengths[x])
+    target_id = max(pids, key=lambda x: lengths[x])
+    binder = get_chain(parent, binder_id)
+    target = get_chain(parent, target_id)
+    target_ca = ca(target)
+
+    best = None
+    for perm in itertools.permutations(chain_ids(penta)):
+        reference = np.concatenate([ca(get_chain(penta, cid)) for cid in perm], axis=0)
+        if reference.shape != target_ca.shape:
+            continue
+        r, t, rmsd = kabsch(target_ca, reference)
+        if best is None or rmsd < best[0]:
+            best = (rmsd, perm, r, t)
+    if best is None:
+        raise SystemExit('Could not reconstruct design2 -> penta mapping')
+    target_rmsd, penta_order, r1, t1 = best
+    if target_rmsd > 2.0:
+        raise SystemExit(f'design2 target mapping RMSD {target_rmsd:.3f} A > 2 A')
+
+    binder_in_penta = transform(binder, r1, t1)
+    r2, t2, penta_rmsd = match_penta_to_ring(penta, ring)
+    binder_ring = transform(binder_in_penta, r2, t2)
+
+    candidates = []
+    for i, c1 in enumerate(order):
+        c2 = order[(i + 1) % len(order)]
+        n1 = binder_contact_residues(binder_ring, get_chain(ring, c1))
+        n2 = binder_contact_residues(binder_ring, get_chain(ring, c2))
+        candidates.append((min(n1, n2), n1 + n2, c1, c2, n1, n2))
+    candidates.sort(reverse=True)
+    _, _, c1, c2, n1, n2 = candidates[0]
+
+    h1 = hotspot_candidates(get_chain(ring, c1), binder_ring, axis, centre)
+    h2 = hotspot_candidates(get_chain(ring, c2), binder_ring, axis, centre)
+    hotspots = {}
+    for x in h1:
+        hotspots[f'{ref_first}{x["resid"]}'] = x['atom']
+    for x in h2:
+        hotspots[f'{ref_second}{x["resid"]}'] = x['atom']
+
+    target_first = get_chain(ring, ref_first).copy()
+    target_second = get_chain(ring, ref_second).copy()
+    target_ab = concat_atom_arrays([target_first, target_second])
+    target_out = Path(args.target_out)
+    target_out.parent.mkdir(parents=True, exist_ok=True)
+    write_pdb(target_ab, target_out)
+
+    # Put the new binder COM near the symmetry-equivalent position of the historical design2 binder.
+    ref_pair = np.concatenate([ca(get_chain(ring, c1)), ca(get_chain(ring, c2))], axis=0)
+    dst_pair = np.concatenate([ca(get_chain(ring, ref_first)), ca(get_chain(ring, ref_second))], axis=0)
+    rg, tg, groove_rmsd = kabsch(ref_pair, dst_pair)
+    binder_canonical = transform(binder_ring, rg, tg)
+    ori_token = ca(binder_canonical).mean(axis=0).tolist()
+
+    specs = {}
+    for name, length in [('vertical_46_54','46-54'), ('vertical_54_62','54-62'), ('vertical_62_72','62-72')]:
+        specs[name] = {
+            'dialect': 2,
+            'input': str(target_out.resolve()),
+            'contig': f'{length},/0,{ref_first}18-155,/0,{ref_second}18-155',
+            'ori_token': [round(float(x), 5) for x in ori_token],
+            'select_hotspots': hotspots,
+            'is_non_loopy': True,
+            'plddt_enhanced': True,
+            'extra': {
+                'goal': 'vertical binder in groove between adjacent SlyB subunits',
+                'vertical_reference': 'native C11 symmetry axis',
+                'historical_parent': 'design2',
+            },
+        }
+
+    Path(args.spec_out).write_text(json.dumps(specs, indent=2) + '\n')
+    geo = {
+        'vertical_definition': 'binder principal CA axis parallel to native C11 symmetry axis',
+        'maximum_vertical_angle_deg': 20.0,
+        'ring_order': order,
+        'ring_axis': axis.tolist(),
+        'ring_centre': centre.tolist(),
+        'historical_groove': [c1, c2],
+        'historical_contacts': {c1: n1, c2: n2},
+        'generation_pair': [ref_first, ref_second],
+        'hotspots': hotspots,
+        'hotspot_source': {c1: h1, c2: h2},
+        'ori_token': ori_token,
+        'design2_target_to_penta_RMSD_A': target_rmsd,
+        'penta_to_ring_RMSD_A': penta_rmsd,
+        'historical_to_generation_groove_RMSD_A': groove_rmsd,
+        'penta_chain_order': list(penta_order),
+    }
+    Path(args.geometry_out).write_text(json.dumps(geo, indent=2) + '\n')
+
+    print('VERTICAL GROOVE RECOVERED')
+    print('ring order:', order)
+    print('historical groove:', c1, c2, 'contacts:', n1, n2)
+    print('generation pair:', ref_first, ref_second)
+    print('hotspots:', hotspots)
+    print('ori_token:', ori_token)
+    print('design2->penta RMSD:', round(target_rmsd, 4))
+    print('penta->ring RMSD:', round(penta_rmsd, 4))
+    print('spec:', args.spec_out)
+
+
+if __name__ == '__main__':
+    main()

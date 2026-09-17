@@ -1,0 +1,135 @@
+#!/bin/bash -l
+#SBATCH --job-name=slyb96_v150
+#SBATCH --array=0-5%6
+#SBATCH --nodes=1
+#SBATCH --gpus-per-node=1
+#SBATCH --cpus-per-gpu=12
+#SBATCH --mem=64G
+#SBATCH --time=12:00:00
+#SBATCH --output=/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/logs/slyb96_v150_%A_%a.out
+#SBATCH --error=/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/logs/slyb96_v150_%A_%a.out
+
+
+# Keep runtime/JIT caches off HOME quota
+export TMPDIR="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/rfd3_tmp"
+export XDG_CACHE_HOME="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/rfd3_xdg"
+export TRITON_CACHE_DIR="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/triton_cache"
+export CUDA_CACHE_PATH="/scratch/brussel/vo/000/bvo00014/vsc39230/tmp/cuda_cache"
+
+mkdir -p \
+  "$TMPDIR" \
+  "$XDG_CACHE_HOME" \
+  "$TRITON_CACHE_DIR" \
+  "$CUDA_CACHE_PATH"
+
+
+set -Eeuo pipefail
+
+BASE=/scratch/brussel/vo/000/bvo00014/vsc39230
+
+SLYB="$BASE/slyb"
+REPO="$BASE/repos/Internship-Imec"
+
+WORK="$REPO/work/vertical96_150"
+
+RFDENV="$BASE/venvs/rfd3-foundry"
+CKPT="$BASE/models/foundry_checkpoints"
+
+TASK="$SLURM_ARRAY_TASK_ID"
+
+case "$TASK" in
+
+    0|1)
+        KEY="vertical96_46_54"
+        ;;
+
+    2|3)
+        KEY="vertical96_54_62"
+        ;;
+
+    4|5)
+        KEY="vertical96_62_72"
+        ;;
+
+    *)
+        echo "invalid task=$TASK"
+        exit 10
+        ;;
+esac
+
+SPEC="$WORK/shards/shard_${TASK}_${KEY}.json"
+
+RUNROOT="$SLYB/out/rfd3_vertical96_150_${SLURM_ARRAY_JOB_ID}"
+
+OUT="$RUNROOT/task_${TASK}_${KEY}"
+
+module purge
+module load Python/3.12.3-GCCcore-13.3.0
+
+test -f "$WORK/CPU96_READY"
+test -f "$RFDENV/RFD3_READY"
+test -s "$SPEC"
+
+source "$RFDENV/bin/activate"
+
+export FOUNDRY_CHECKPOINT_DIRS="$CKPT"
+
+mkdir -p "$OUT"
+
+echo "=========================================="
+echo "SLYB historical96 production"
+echo "array=$SLURM_ARRAY_JOB_ID"
+echo "task=$TASK"
+echo "arm=$KEY"
+echo "host=$(hostname)"
+echo "out=$OUT"
+echo "=========================================="
+
+nvidia-smi
+
+python - <<'PY'
+import torch
+
+if not torch.cuda.is_available():
+    raise SystemExit(
+        "CUDA unavailable"
+    )
+
+print(
+    "GPU:",
+    torch.cuda.get_device_name(0)
+)
+PY
+
+# 5 batches x 5 designs = 25/task
+# 6 tasks x 25 = 150 total
+
+rfd3 design \
+    inputs="$SPEC" \
+    out_dir="$OUT" \
+    n_batches=5 \
+    diffusion_batch_size=5 \
+    inference_sampler.num_timesteps=200 \
+    inference_sampler.step_scale=3 \
+    inference_sampler.gamma_0=0.2 \
+    prevalidate_inputs=True \
+    skip_existing=False \
+    dump_trajectories=False
+
+COUNT=$(
+    find "$OUT" \
+    -type f \
+    -name '*_model_0.cif.gz' \
+    | wc -l
+)
+
+echo "generated=$COUNT"
+echo "expected=25"
+
+if [ "$COUNT" -ne 25 ]; then
+    exit 30
+fi
+
+touch "$OUT/SHARD_DONE"
+
+echo "TASK $TASK COMPLETE"

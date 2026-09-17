@@ -1,0 +1,15 @@
+group	name	path	chain	n_res	seq_sha1	native_seq_identity
+parent	design0	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design0.cif	A	50	c80f0e6b1ebc	0.0
+parent	design0	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design0.cif	B	480	b7fbbdbd4a82	0.0
+parent	design1	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design1.cif	A	37	2e7ebf065fc4	0.0
+parent	design1	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design1.cif	B	480	b7fbbdbd4a82	0.0
+parent	design2	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design2.cif	A	51	03b0612fd59d	0.0
+parent	design2	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design2.cif	B	480	b7fbbdbd4a82	0.0
+parent	design6	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design6.cif	A	38	dadd633864a1	0.0
+parent	design6	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/inputs/design6.cif	B	480	b7fbbdbd4a82	0.0
+rf3_monomer	d2_s0	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d2_s0/d2_s0_model.cif	A	51	a9b84aad781b	0.0
+rf3_monomer	d2_s1	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d2_s1/d2_s1_model.cif	A	51	bd7e9c9d05d7	0.0
+rf3_monomer	d1_s3	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d1_s3/d1_s3_model.cif	A	37	f0720c4a5a96	0.0
+rf3_monomer	d6_s6	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s6/d6_s6_model.cif	A	38	a6cfd70855b3	0.0
+rf3_monomer	d6_s3	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s3/d6_s3_model.cif	A	38	45560f59ef35	0.0
+rf3_monomer	d6_s7	/scratch/brussel/vo/000/bvo00014/vsc39230/slyb/sequence_design/out/rf3_primary_50056967/d6_s7/d6_s7_model.cif	A	38	a79824b4bb57	0.0
