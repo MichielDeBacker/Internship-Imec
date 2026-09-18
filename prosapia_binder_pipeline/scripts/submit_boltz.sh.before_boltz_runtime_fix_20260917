@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG="${CONFIG:-$ROOT/config/slyb_hydra.yaml}"
+WORK=/scratch/brussel/vo/000/bvo00014/vsc39230/repos/Internship-Imec/work/prosapia_binder_pipeline/slyb_vertical96
+MANIFEST="$WORK/03_boltz/boltz_inputs.tsv"
+THROTTLE="${THROTTLE:-12}"
+
+[ -s "$MANIFEST" ] || { echo "Missing manifest: $MANIFEST" >&2; exit 1; }
+N=$(( $(wc -l < "$MANIFEST") - 1 ))
+[ "$N" -gt 0 ] || { echo "No Boltz inputs in manifest" >&2; exit 1; }
+
+mkdir -p "$ROOT/logs"
+cd "$ROOT"
+echo "Submitting $N Boltz tasks with max $THROTTLE concurrent"
+sbatch --array="0-$((N-1))%${THROTTLE}" --export=ALL,CONFIG="$CONFIG" slurm/boltz_array.sbatch
