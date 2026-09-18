@@ -46,7 +46,7 @@ def main():
     out_dir = work_path(cfg, "03_boltz", "runs", sequence_id)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    expected_dir = out_dir / "predictions" / sequence_id
+    expected_dir = out_dir / f"boltz_results_{sequence_id}" / "predictions" / sequence_id
     existing = sorted(glob.glob(str(expected_dir / f"confidence_{sequence_id}_model_*.json")))
     expected_samples = int(cfg["boltz"]["diffusion_samples"])
     if len(existing) >= expected_samples and not args.override:
@@ -70,6 +70,8 @@ def main():
         cmd.append("--override")
     if bool(boltz_cfg.get("use_potentials", False)):
         cmd.append("--use_potentials")
+    if bool(boltz_cfg.get("no_kernels", False)):
+        cmd.append("--no_kernels")
     if bool(boltz_cfg.get("write_full_pae", False)):
         cmd.append("--write_full_pae")
     if bool(boltz_cfg.get("write_full_pde", False)):

@@ -103,7 +103,7 @@ def main():
         template = {
             "pdb": row["target_template_pdb"],
             "chain_id": ["A", "B"],
-            # Boltz PDB templates use subchain ids such as A1 and B1.
+            # Boltz/Gemmi exposes PDB template chains A/B as subchains A1/B1.
             "template_id": ["A1", "B1"],
         }
         if bool(boltz_cfg.get("template_force", False)):
