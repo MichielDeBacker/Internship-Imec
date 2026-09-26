@@ -1,0 +1,36 @@
+version: 1
+sequences:
+- protein:
+    id: A
+    sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+    msa: empty
+- protein:
+    id: B
+    sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+    msa: empty
+- protein:
+    id: C
+    sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+    msa: empty
+- protein:
+    id: D
+    sequence: CVNNDTLSGDVYTASEAKQVQNVSYGTIVNVRPVQIQGGDDSNQSAMNKTQGVELEIRKDDGNTIMVVQKQGNTRFSPGQRVVLASNGSQVTVSPR
+    msa: empty
+- protein:
+    id: E
+    sequence: SAITSFSSLEELEALCRAAVSDEECALYMANLGKTVTDPATLARLDAIDARITAYARSV
+    msa: empty
+templates:
+- pdb: /scratch/brussel/vo/000/bvo00014/vsc39230/slyb/boltz_A110_top5_4x96_KABC/template/native_KABC_as_ABCD_96aa.pdb
+  chain_id:
+  - A
+  - B
+  - C
+  - D
+  template_id:
+  - A1
+  - B1
+  - C1
+  - D1
+  force: true
+  threshold: 1.0

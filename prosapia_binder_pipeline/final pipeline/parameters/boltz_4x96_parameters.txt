@@ -1,0 +1,49 @@
+Boltz version:
+Boltz-2 2.2.1
+
+Target context:
+A = native K, residues 18-60 + 103-155 (96 aa)
+B = native A, residues 18-60 + 103-155 (96 aa)
+C = native B, residues 18-60 + 103-155 (96 aa)
+D = native C, residues 18-60 + 103-155 (96 aa)
+E = designed binder, 58-62 aa
+
+Templating:
+Chains A-D templated to native K/A/B/C geometry.
+Binder E untemplated.
+force: true
+threshold: 1.0
+MSA: empty for all chains
+
+Boltz prediction parameters:
+--recycling_steps 3
+--sampling_steps 200
+--diffusion_samples 1
+--devices 1
+--accelerator gpu
+--use_potentials
+--no_kernels
+
+Pairwise iPTM mapping:
+binder -> K        pair_chains_iptm["4"]["0"]
+binder -> native A pair_chains_iptm["4"]["1"]
+binder -> native B pair_chains_iptm["4"]["2"]
+binder -> native C pair_chains_iptm["4"]["3"]
+
+Primary confidence quantity:
+minAB = min(binder->nativeA, binder->nativeB)
+
+Broad shortlist:
+minAB > 0.50
+AND outside_offset > 0 Angstrom
+
+Physical contact:
+A binder residue is in contact when any binder/target heavy atom pair
+is <= 5.0 Angstrom.
+
+Severe clash screen:
+binder/native-full-ring heavy atom pair < 2.0 Angstrom.
+
+Important:
+Pairwise iPTM is NOT sufficient proof of physical contact.
+Explicit contact and full-ring geometry checks are mandatory.
